@@ -1,18 +1,193 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.techbeloved.b_tic_tac_toe.MainActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp">
+        <Button
+            android:layout_width="144dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/xPlayerBtn"
+            android:drawableStart="@drawable/ic_clear"
+            android:text="@string/score_placeholder"
+            android:textAlignment="viewEnd"/>
+
+        <!--Space is for separation of the two buttons-->
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+        <Button
+            android:layout_width="144dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/oPlayerBtn"
+            android:drawableStart="@drawable/ic_circle"
+            android:text="@string/score_placeholder"
+            android:textAlignment="viewEnd"/>
+    </LinearLayout>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:id="@+id/game_status_textview"
+        android:layout_gravity="center"
+        tools:text="Select player or start game"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:weightSum="1"
+        android:background="@color/primary_light">
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:weightSum="1">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.33"
+                android:gravity="center"
+                android:textSize="48sp"
+                android:drawableEnd="@drawable/vertical_divider"
+                tools:text="o"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.33"
+                android:gravity="center"
+                android:textSize="48sp"
+                android:drawableEnd="@drawable/vertical_divider"
+                tools:text="x"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.33"
+                android:gravity="center"
+                android:textSize="48sp"
+                tools:text="o"/>
+        </LinearLayout>
+        <!--Divider line-->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_thickness"
+            android:background="@color/divider"
+            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:weightSum="1">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.33"
+                android:gravity="center"
+                android:textSize="48sp"
+                android:drawableEnd="@drawable/vertical_divider"
+                tools:text="o"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.33"
+                android:gravity="center"
+                android:textSize="48sp"
+                android:drawableEnd="@drawable/vertical_divider"
+                tools:text="x"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.33"
+                android:gravity="center"
+                android:textSize="48sp"
+                tools:text="o"/>
+        </LinearLayout>
+        <!--Divider line-->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_thickness"
+            android:background="@color/divider"
+            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:weightSum="1">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.33"
+                android:gravity="center"
+                android:textSize="48sp"
+                android:drawableEnd="@drawable/vertical_divider"
+                tools:text="o"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.33"
+                android:gravity="center"
+                android:textSize="48sp"
+                android:drawableEnd="@drawable/vertical_divider"
+                tools:text="x"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.33"
+                android:gravity="center"
+                android:textSize="48sp"
+                tools:text="o"/>
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/threeSquareBtn"
+            android:text="3 x 3"/>
 
-</android.support.constraint.ConstraintLayout>
+        <!--Space is for separation of the two buttons-->
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/fiveSquareBtn"
+            android:shadowDy="3"
+            android:text="5 x 5"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp">
+        <Button
+            android:layout_width="144dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/restartBtn"
+            android:text="@string/restart_game"/>
+
+        <!--Space is for separation of the two buttons-->
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+        <Button
+            android:layout_width="144dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/resetBtn"
+            android:text="@string/reset_game"/>
+    </LinearLayout>
+
+</LinearLayout>
