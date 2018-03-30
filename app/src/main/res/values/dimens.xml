@@ -3,4 +3,5 @@
     <dimen name="divider_height">150dp</dimen>
     <dimen name="divider_thickness">5dp</dimen>
     <dimen name="text_big">48sp</dimen>
+    <dimen name="text_small">22sp</dimen>
 </resources>

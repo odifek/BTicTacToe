@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -13,6 +14,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int THREE_SQUARE_BOARD = 3;
     private static final int FIVE_SQUARE_BOARD = 5;
     private static final int DEFAULT_BOARD_SIZE = THREE_SQUARE_BOARD;
+
     private static final String O_CHAR = "O";
     private static final String X_CHAR = "X";
     private static final String X_PLAYER = "X";
@@ -29,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean userPlaysFirst = true;
     private String userChar, machineChar;
     private String currentPlayer;
+
+    // View flipper
+    private ViewFlipper layoutFlipper;
     // Views
     private TextView gameStatusTextView;
     // Set user player as O when clicked
@@ -59,24 +64,6 @@ public class MainActivity extends AppCompatActivity {
             userChar = X_CHAR;
 
             setGameStatus("'x' turn");
-        }
-    };
-    /**
-     * onclickListener for Buttons
-     */
-    // Sets the board size to three square. This is only active initially
-    View.OnClickListener threeSquareOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            setBoardSize(THREE_SQUARE_BOARD);
-
-            // Enable the other button and disable this one
-            fiveSquareButton.setClickable(true);
-            v.setClickable(false);
-
-            // Re-initialize the game board
-            initializeGameBoard();
-
         }
     };
     private Button oPlayerButton, xPlayerButton;
@@ -111,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
             analyseBoard(cellPlayed);
         }
     };
+
     /**
      * onClickListener for the reset button
      */
@@ -127,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
             restartGame();
         }
     };
+
     private Button threeSquareButton, fiveSquareButton;
     // Sets the board size to five square. This is only active initially
     View.OnClickListener fiveSquareOnClickListener = new View.OnClickListener() {
@@ -134,8 +123,29 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             setBoardSize(FIVE_SQUARE_BOARD);
 
+            // Change the view
+            layoutFlipper.showNext();
+
             // Enable the other button and disable this one
             threeSquareButton.setClickable(true);
+            v.setClickable(false);
+            // Re - initialize the game board
+            initializeGameBoard();
+
+        }
+    };
+
+    // Sets the board size to three square. This is only active initially
+    View.OnClickListener threeSquareOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            setBoardSize(THREE_SQUARE_BOARD);
+
+            // Change the view
+            layoutFlipper.showPrevious();
+
+            // Enable the other button and disable this one
+            fiveSquareButton.setClickable(true);
             v.setClickable(false);
             // Re - initialize the game board
             initializeGameBoard();
@@ -171,11 +181,17 @@ public class MainActivity extends AppCompatActivity {
         // Get layout resources
         Resources resources = getResources();
         String packageName = getPackageName();
+
+        //Prefix for cell IDs. Default is three square
+        String cellPrefix = "three_cell_";
+        if (boardSize == 5)
+            cellPrefix = "five_cell_";
+
         for (int i = 0; i < boardSize; i++) {
             for (int j = 0; j < boardSize; j++) {
 
                 // Retrieve the TextView ID using the name. Cells have ids cell_00, cell_01, and so on
-                int resId = resources.getIdentifier("cell_" + i + j, "id", packageName);
+                int resId = resources.getIdentifier(cellPrefix + i + j, "id", packageName);
                 TextView gameCell = findViewById(resId);
 
                 // Set all cells to blank
@@ -213,6 +229,19 @@ public class MainActivity extends AppCompatActivity {
 
         Button restartGameButton = findViewById(R.id.restartBtn);
         restartGameButton.setOnClickListener(restartButtonOnClickListener);
+
+        // Configure buttons to change layout from 3 square to 5 square and vice versa
+        // By default board is 3 x 3 so disable the button
+        threeSquareButton = findViewById(R.id.threeSquareBtn);
+        threeSquareButton.setOnClickListener(threeSquareOnClickListener);
+        threeSquareButton.setClickable(false);
+
+        fiveSquareButton = findViewById(R.id.fiveSquareBtn);
+        fiveSquareButton.setOnClickListener(fiveSquareOnClickListener);
+
+        // Configure layout flipper
+        layoutFlipper = findViewById(R.id.layout_flipper);
+//        layoutFlipper.showNext();
     }
 
     /**
@@ -437,8 +466,12 @@ public class MainActivity extends AppCompatActivity {
     private void enableGameButtons() {
         xPlayerButton.setClickable(true);
         oPlayerButton.setClickable(true);
-//        threeSquareButton.setClickable(true);
-//        fiveSquareButton.setClickable(true);
+
+        // Enable the right button in case the player wants to change the layout
+        if (boardSize == THREE_SQUARE_BOARD)
+            fiveSquareButton.setClickable(true);
+        else
+            threeSquareButton.setClickable(true);
     }
 
     /**
@@ -447,8 +480,8 @@ public class MainActivity extends AppCompatActivity {
     private void disableGameButtons() {
         xPlayerButton.setClickable(false);
         oPlayerButton.setClickable(false);
-//        threeSquareButton.setClickable(false);
-//        fiveSquareButton.setClickable(false);
+        threeSquareButton.setClickable(false);
+        fiveSquareButton.setClickable(false);
     }
 }
 

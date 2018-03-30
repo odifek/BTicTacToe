@@ -18,6 +18,7 @@
             android:id="@+id/xPlayerBtn"
             android:drawableStart="@drawable/ic_clear"
             android:text="@string/score_placeholder"
+            android:textSize="@dimen/text_small"
             android:textAlignment="viewEnd"/>
 
         <!--Space is for separation of the two buttons-->
@@ -31,6 +32,7 @@
             android:id="@+id/oPlayerBtn"
             android:drawableStart="@drawable/ic_circle"
             android:text="@string/score_placeholder"
+            android:textSize="@dimen/text_small"
             android:textAlignment="viewEnd"/>
     </LinearLayout>
     <TextView
@@ -39,122 +41,21 @@
         android:id="@+id/game_status_textview"
         android:layout_gravity="center"
         tools:text="Select player or start game"/>
-    <LinearLayout
+
+    <!--ViewFlipper holds the two layouts - threeSquare and fiveSquare layouts.-->
+    <ViewFlipper
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:weightSum="1"
-        android:background="@color/primary_light">
-        
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:weightSum="1">
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:id="@+id/cell_00"
-                android:layout_weight="0.33"
-                android:gravity="center"
-                android:textSize="@dimen/text_big"
-                android:text="@string/times"
-                android:drawableEnd="@drawable/vertical_divider"
-                tools:text="o"/>
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:id="@+id/cell_01"
-                android:layout_weight="0.33"
-                android:gravity="center"
-                android:textSize="@dimen/text_big"
-                android:drawableEnd="@drawable/vertical_divider"
-                tools:text="x"/>
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:id="@+id/cell_02"
-                android:layout_weight="0.33"
-                android:gravity="center"
-                android:textSize="@dimen/text_big"
-                android:text="@string/circle"
-                />
-        </LinearLayout>
-        <!--Divider line-->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/divider_thickness"
-            android:background="@color/divider"
-            />
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:weightSum="1">
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:id="@+id/cell_10"
-                android:layout_weight="0.33"
-                android:gravity="center"
-                android:textSize="@dimen/text_big"
-                android:drawableEnd="@drawable/vertical_divider"
-                tools:text="o"/>
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:id="@+id/cell_11"
-                android:layout_weight="0.33"
-                android:gravity="center"
-                android:textSize="@dimen/text_big"
-                android:drawableEnd="@drawable/vertical_divider"
-                tools:text="x"/>
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:id="@+id/cell_12"
-                android:layout_weight="0.33"
-                android:gravity="center"
-                android:textSize="@dimen/text_big"
-                tools:text="o"/>
-        </LinearLayout>
-        <!--Divider line-->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/divider_thickness"
-            android:background="@color/divider"
-            />
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:weightSum="1">
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:id="@+id/cell_20"
-                android:layout_weight="0.33"
-                android:gravity="center"
-                android:textSize="@dimen/text_big"
-                android:drawableEnd="@drawable/vertical_divider"
-                tools:text="o"/>
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:id="@+id/cell_21"
-                android:layout_weight="0.33"
-                android:gravity="center"
-                android:textSize="@dimen/text_big"
-                android:drawableEnd="@drawable/vertical_divider"
-                tools:text="x"/>
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:id="@+id/cell_22"
-                android:layout_weight="0.33"
-                android:gravity="center"
-                android:textSize="@dimen/text_big"
-                tools:text="o"/>
-        </LinearLayout>
-    </LinearLayout>
+        android:id="@+id/layout_flipper"
+        android:inAnimation="@android:anim/slide_in_left"
+        android:outAnimation="@android:anim/slide_out_right">
+
+        <include layout="@layout/three_square_layout" />
+
+        <include layout="@layout/five_square_layout" />
+
+    </ViewFlipper>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
