@@ -590,10 +590,10 @@ public class MainActivity extends AppCompatActivity {
      */
     private ArrayList<Integer[]> getEmptyCells() {
         ArrayList<Integer[]> emptyCells = new ArrayList<>();
-        Integer[] emptyCell = new Integer[2];
         for (int i = 0; i < boardSize; i++) {
             for (int j = 0; j < boardSize; j++) {
                 if (gameBoard[i][j] == null) {
+                    Integer[] emptyCell = new Integer[2];
                     emptyCell[0] = i;
                     emptyCell[1] = j;
                     emptyCells.add(emptyCell);
@@ -640,6 +640,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Declare the rand generator only once
     // SecureRandom ensures unpredictability
+    // TODO: random generator not actually randomising things
     private SecureRandom random = new SecureRandom();
 
     /**
