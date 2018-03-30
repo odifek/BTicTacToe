@@ -54,25 +54,67 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:id="@+id/cell_00"
                 android:layout_weight="0.33"
                 android:gravity="center"
-                android:textSize="48sp"
+                android:textSize="@dimen/text_big"
+                android:text="@string/times"
                 android:drawableEnd="@drawable/vertical_divider"
                 tools:text="o"/>
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:id="@+id/cell_01"
                 android:layout_weight="0.33"
                 android:gravity="center"
-                android:textSize="48sp"
+                android:textSize="@dimen/text_big"
                 android:drawableEnd="@drawable/vertical_divider"
                 tools:text="x"/>
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:id="@+id/cell_02"
                 android:layout_weight="0.33"
                 android:gravity="center"
-                android:textSize="48sp"
+                android:textSize="@dimen/text_big"
+                android:text="@string/circle"
+                />
+        </LinearLayout>
+        <!--Divider line-->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_thickness"
+            android:background="@color/divider"
+            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:weightSum="1">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:id="@+id/cell_10"
+                android:layout_weight="0.33"
+                android:gravity="center"
+                android:textSize="@dimen/text_big"
+                android:drawableEnd="@drawable/vertical_divider"
+                tools:text="o"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:id="@+id/cell_11"
+                android:layout_weight="0.33"
+                android:gravity="center"
+                android:textSize="@dimen/text_big"
+                android:drawableEnd="@drawable/vertical_divider"
+                tools:text="x"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:id="@+id/cell_12"
+                android:layout_weight="0.33"
+                android:gravity="center"
+                android:textSize="@dimen/text_big"
                 tools:text="o"/>
         </LinearLayout>
         <!--Divider line-->
@@ -88,59 +130,28 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:id="@+id/cell_20"
                 android:layout_weight="0.33"
                 android:gravity="center"
-                android:textSize="48sp"
+                android:textSize="@dimen/text_big"
                 android:drawableEnd="@drawable/vertical_divider"
                 tools:text="o"/>
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:id="@+id/cell_21"
                 android:layout_weight="0.33"
                 android:gravity="center"
-                android:textSize="48sp"
+                android:textSize="@dimen/text_big"
                 android:drawableEnd="@drawable/vertical_divider"
                 tools:text="x"/>
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:id="@+id/cell_22"
                 android:layout_weight="0.33"
                 android:gravity="center"
-                android:textSize="48sp"
-                tools:text="o"/>
-        </LinearLayout>
-        <!--Divider line-->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/divider_thickness"
-            android:background="@color/divider"
-            />
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:weightSum="1">
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.33"
-                android:gravity="center"
-                android:textSize="48sp"
-                android:drawableEnd="@drawable/vertical_divider"
-                tools:text="o"/>
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.33"
-                android:gravity="center"
-                android:textSize="48sp"
-                android:drawableEnd="@drawable/vertical_divider"
-                tools:text="x"/>
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.33"
-                android:gravity="center"
-                android:textSize="48sp"
+                android:textSize="@dimen/text_big"
                 tools:text="o"/>
         </LinearLayout>
     </LinearLayout>
