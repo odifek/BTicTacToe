@@ -1,6 +1,7 @@
 package com.techbeloved.b_tic_tac_toe;
 
 import android.content.res.Resources;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -8,7 +9,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,11 +24,15 @@ public class MainActivity extends AppCompatActivity {
     private static final String X_CHAR = "X";
     private static final String X_PLAYER = "X";
     private static final String O_PLAYER = "O";
-    private static final String INITIAL_GAME_STATUS = "Start game or select player";
+    private static final String INITIAL_GAME_STATUS = "Start game or select player. You can also " +
+            "select board size";
     private static final String DEFAULT_USER_CHAR = X_CHAR;
 
     private static final String WINNER_MSG = "WINNER!";
     private static final String DRAW_MSG = "DRAW!";
+    private static final String GAME_OVER = "Game Over!";
+
+    private String userPlayer, machinePlayer;
     // Define variables and constants
     private int oScore = 0;
     private int xScore = 0;
@@ -34,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean userPlaysFirst = true;
     private String userChar, machineChar;
     private String currentPlayer;
+
+    // Contains prefix of the cells either five_cell_ or three_cell_ depending on size of board
+    private String cellPrefix;
 
     // View flipper
     private ViewFlipper layoutFlipper;
@@ -44,9 +54,16 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             v.setClickable(false);
+            disableGameButtons();
             userPlaysFirst = false;
-            // TODO: move this to the right place
-            currentPlayer = O_PLAYER; // This is temporary
+
+            // Set user player to O_PLAYER
+            userPlayer = O_PLAYER;
+
+            // Set machinePlayer to X_PLAYER
+            // and call on machine to play immediately
+            machinePlayer = X_PLAYER;
+
 
             // Change user play character to "O"
             userChar = O_CHAR;
@@ -59,9 +76,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             v.setClickable(false);
+            disableGameButtons();
             userPlaysFirst = true;
-            // TODO: move this to the right place
-            currentPlayer = X_PLAYER;
+
+            // Set appropriate values for machine player and user player
+            userPlayer = X_PLAYER;
+            machinePlayer = O_PLAYER;
 
             // Change user play character to "O"
             userChar = X_CHAR;
@@ -92,13 +112,20 @@ public class MainActivity extends AppCompatActivity {
             cellView.setText(userChar);
 
             // Get cell information
-            int[] cellPlayed = (int[]) cellView.getTag();
+            final int[] cellPlayed = (int[]) cellView.getTag();
 
             // First update game board
             gameBoard[cellPlayed[0]][cellPlayed[1]] = userChar;
 
             // Analyse the board: checking for win, end of game, etc
-            analyseBoard(cellPlayed);
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //Do something after 100ms
+                    analyseBoard(cellPlayed);
+                }
+            }, 100);
         }
     };
 
@@ -180,18 +207,21 @@ public class MainActivity extends AppCompatActivity {
         gameStatusTextView = findViewById(R.id.game_status_textview);
         gameStatusTextView.setText(INITIAL_GAME_STATUS);
 
-        // Set the default user character to "X"
+        // Set the default user player to "X" and default machine player to "O"
         userChar = DEFAULT_USER_CHAR;
-        currentPlayer = X_PLAYER;
+        userPlayer = X_PLAYER;
+        currentPlayer = userPlayer;
+        machinePlayer = O_PLAYER;
 
         // Get layout resources
         Resources resources = getResources();
         String packageName = getPackageName();
 
         //Prefix for cell IDs. Default is three square
-        String cellPrefix = "three_cell_";
         if (boardSize == 5)
             cellPrefix = "five_cell_";
+        else
+            cellPrefix = "three_cell_";
 
         for (int i = 0; i < boardSize; i++) {
             for (int j = 0; j < boardSize; j++) {
@@ -270,16 +300,22 @@ public class MainActivity extends AppCompatActivity {
         // Checks for a win
         if (isRowWin(cellPlayed) || isColumnWin(cellPlayed) || isDiagonalWin(cellPlayed)) {
             updateScoreBoard();
-
-            // TODO: display winner message here
             displayResult(WINNER_MSG, currentPlayer);
 
         } else if (boardIsFilled()) {
             displayResult(DRAW_MSG, X_PLAYER + O_PLAYER);
+        } else
+            nextTurn();
+
+    }
+
+    private void nextTurn() {
+        if (currentPlayer == userPlayer) {
+            machinePlay();
+        } else {
+            currentPlayer = userPlayer;  // Then wait for user click
+            setGameStatus(currentPlayer + " - turn");
         }
-
-
-        // TODO: check for column win, diagonal win, end of game, draw
     }
 
     /**
@@ -289,7 +325,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private boolean boardIsFilled() {
         for (int i = 0; i < boardSize; i++) {
-            for (int j = 0; i < boardSize; j++) {
+            for (int j = 0; j < boardSize; j++) {
                 if (gameBoard[i][j] == null)
                     return false;
             }
@@ -298,12 +334,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void displayResult(String status, String player) {
+        // Display game status
+        setGameStatus(GAME_OVER);
         // Get the textviews for the congratulatory winner message
         TextView winnerCharTextView = findViewById(R.id.winner_char_text_view);
         TextView winnerMsgTextView = findViewById(R.id.winner_msg_text_view);
 
-        winnerCharTextView.setText(currentPlayer);
-        winnerMsgTextView.setText(R.string.winner_msg);
+        winnerCharTextView.setText(player);
+        winnerMsgTextView.setText(status);
 
         // set up click listeners
         winnerCharTextView.setOnClickListener(new View.OnClickListener() {
@@ -545,7 +583,11 @@ public class MainActivity extends AppCompatActivity {
         fiveSquareButton.setClickable(false);
     }
 
-    // TODO: Implement a machine play algorithm
+    /**
+     * Iterates through the cells of the game board retrieving the empty cells
+     *
+     * @return an {@link ArrayList} of the empty cells
+     */
     private ArrayList<Integer[]> getEmptyCells() {
         ArrayList<Integer[]> emptyCells = new ArrayList<>();
         Integer[] emptyCell = new Integer[2];
@@ -559,6 +601,97 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return emptyCells;
+    }
+
+    private void disableClickOnCells() {
+        // Get layout resources
+        Resources resources = getResources();
+        String packageName = getPackageName();
+
+        for (int i = 0; i < boardSize; i++) {
+            for (int j = 0; j < boardSize; j++) {
+                // Retrieve the TextView ID using the name. Cells have ids cell_00, cell_01, and so on
+                int resId = resources.getIdentifier(cellPrefix + i + j, "id", packageName);
+                TextView gameCell = findViewById(resId);
+
+                // Disable click
+                gameCell.setClickable(false);
+            }
+        }
+    }
+
+    private void enableClickOnEmptyCells() {
+        // Get layout resources
+        Resources resources = getResources();
+        String packageName = getPackageName();
+
+        for (int i = 0; i < boardSize; i++) {
+            for (int j = 0; j < boardSize; j++) {
+                // Retrieve the TextView ID using the name. Cells have ids cell_00, cell_01, and so on
+                int resId = resources.getIdentifier(cellPrefix + i + j, "id", packageName);
+                TextView gameCell = findViewById(resId);
+
+                // Disable click
+                if (gameBoard[i][j] == null)
+                    gameCell.setClickable(true);
+            }
+        }
+    }
+
+    // Declare the rand generator only once
+    // SecureRandom ensures unpredictability
+    private SecureRandom random = new SecureRandom();
+
+    /**
+     * Handles the machine play algorithm
+     * Selects a random empty cell and plays
+     */
+    private void machinePlay() {
+        currentPlayer = machinePlayer;
+        setGameStatus(currentPlayer + " - turn");
+
+        // Get layout resources
+        final Resources resources = getResources();
+        final String packageName = getPackageName();
+
+        // Disable Click on cells while machine is playing game
+        disableClickOnCells();
+
+        ArrayList<Integer[]> emptyCells = getEmptyCells();
+
+        // Get a random cell to play from the empty ones
+        int playIndex = random.nextInt(emptyCells.size());
+        Integer[] playCell = emptyCells.get(playIndex);
+
+        // The conversion to int individually is necessary as int[] is not compatible with Integer[]
+        final int cellRowId = playCell[0];
+        final int cellColId = playCell[1];
+        final int[] cellPlayed = {cellRowId, cellColId};
+
+        // update the game board
+        gameBoard[cellRowId][cellColId] = currentPlayer;
+
+        // Use handler to play
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //Display  after 100ms
+                // Retrieve the TextView ID using the name. Cells have ids cell_00, cell_01, and so on
+                int resId = resources.getIdentifier(cellPrefix + cellRowId + cellColId,
+                        "id", packageName);
+                TextView gameCell = findViewById(resId);
+
+                // Update the game board text View
+                gameCell.setText(currentPlayer);
+                // TODO: animate this display
+
+                enableClickOnEmptyCells();
+                // Analyse the board: checking for win, end of game, etc
+                analyseBoard(cellPlayed);
+            }
+        }, 100);
+
     }
 }
 
