@@ -9,17 +9,6 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    // Define variables and constants
-    private int oScore = 0;
-    private int xScore = 0;
-
-    private String[][] gameBoard;
-    private int boardSize;
-
-    private boolean userPlaysFirst = true;
-    private String userChar, machineChar;
-    private String currentPlayer;
-
     // Constants
     private static final int THREE_SQUARE_BOARD = 3;
     private static final int FIVE_SQUARE_BOARD = 5;
@@ -32,12 +21,127 @@ public class MainActivity extends AppCompatActivity {
     private static final String DEFAULT_USER_CHAR = X_CHAR;
     private static final String USER_PLAYER = "user";
     private static final String MACHINE_PLAYER = "machine";
-
+    // Define variables and constants
+    private int oScore = 0;
+    private int xScore = 0;
+    private String[][] gameBoard;
+    private int boardSize;
+    private boolean userPlaysFirst = true;
+    private String userChar, machineChar;
+    private String currentPlayer;
     // Views
     private TextView gameStatusTextView;
+    // Set user player as O when clicked
+    View.OnClickListener oPlayerOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            v.setClickable(false);
+            userPlaysFirst = false;
+            // TODO: move this to the right place
+            currentPlayer = O_PLAYER; // This is temporary
+
+            // Change user play character to "O"
+            userChar = O_CHAR;
+
+            setGameStatus("'x' turn");
+        }
+    };
+    // Set user player as X when clicked
+    View.OnClickListener xPlayerOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            v.setClickable(false);
+            userPlaysFirst = true;
+            // TODO: move this to the right place
+            currentPlayer = X_PLAYER;
+
+            // Change user play character to "O"
+            userChar = X_CHAR;
+
+            setGameStatus("'x' turn");
+        }
+    };
+    /**
+     * onclickListener for Buttons
+     */
+    // Sets the board size to three square. This is only active initially
+    View.OnClickListener threeSquareOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            setBoardSize(THREE_SQUARE_BOARD);
+
+            // Enable the other button and disable this one
+            fiveSquareButton.setClickable(true);
+            v.setClickable(false);
+
+            // Re-initialize the game board
+            initializeGameBoard();
+
+        }
+    };
     private Button oPlayerButton, xPlayerButton;
-    private Button resetGameButton, restartGameButton;
+    /**
+     * Whenever a cell is clicked, record the cell and do other things like update the cell
+     * Check for win or game over
+     */
+    View.OnClickListener cellOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            // Do not accept anymore clicks
+            v.setClickable(false);
+
+            // Disable ability to select player once game's started
+            if (oPlayerButton.isClickable() || xPlayerButton.isClickable()) {
+                disableGameButtons();
+            }
+
+            // Retrieve view as TextView
+            TextView cellView = (TextView) v;
+
+            // Update the cell to show the user character {either X or O}
+            cellView.setText(userChar);
+
+            // Get cell information
+            int[] cellPlayed = (int[]) cellView.getTag();
+
+            // First update game board
+            gameBoard[cellPlayed[0]][cellPlayed[1]] = userChar;
+
+            // Analyse the board: checking for win, end of game, etc
+            analyseBoard(cellPlayed);
+        }
+    };
+    /**
+     * onClickListener for the reset button
+     */
+    View.OnClickListener resetButtonOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            resetGameBoard();
+        }
+    };
+    // OnClickListener for the game restart button
+    View.OnClickListener restartButtonOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            restartGame();
+        }
+    };
     private Button threeSquareButton, fiveSquareButton;
+    // Sets the board size to five square. This is only active initially
+    View.OnClickListener fiveSquareOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            setBoardSize(FIVE_SQUARE_BOARD);
+
+            // Enable the other button and disable this one
+            threeSquareButton.setClickable(true);
+            v.setClickable(false);
+            // Re - initialize the game board
+            initializeGameBoard();
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,129 +208,12 @@ public class MainActivity extends AppCompatActivity {
         oPlayerButton = findViewById(R.id.oPlayerBtn);
         oPlayerButton.setOnClickListener(oPlayerOnClickListener);
 
-        resetGameButton = findViewById(R.id.resetBtn);
+        Button resetGameButton = findViewById(R.id.resetBtn);
         resetGameButton.setOnClickListener(resetButtonOnClickListener);
 
-        restartGameButton = findViewById(R.id.restartBtn);
+        Button restartGameButton = findViewById(R.id.restartBtn);
         restartGameButton.setOnClickListener(restartButtonOnClickListener);
     }
-
-    // Set user player as O when clicked
-    View.OnClickListener oPlayerOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            v.setClickable(false);
-            userPlaysFirst = false;
-            // TODO: move this to the right place
-            currentPlayer = O_PLAYER; // This is temporary
-
-            // Change user play character to "O"
-            userChar = O_CHAR;
-
-            setGameStatus("'x' turn");
-        }
-    };
-
-    // Set user player as X when clicked
-    View.OnClickListener xPlayerOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            v.setClickable(false);
-            userPlaysFirst = true;
-            // TODO: move this to the right place
-            currentPlayer = X_PLAYER;
-
-            // Change user play character to "O"
-            userChar = X_CHAR;
-
-            setGameStatus("'x' turn");
-        }
-    };
-
-
-    /**
-     * Whenever a cell is clicked, record the cell and do other things like update the cell
-     * Check for win or game over
-     */
-    View.OnClickListener cellOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            // Do not accept anymore clicks
-            v.setClickable(false);
-
-            // Disable ability to select player once game's started
-            if (oPlayerButton.isClickable() || xPlayerButton.isClickable()) {
-                disableGameButtons();
-            }
-
-            // Retrieve view as TextView
-            TextView cellView = (TextView) v;
-
-            // Update the cell to show the user character {either X or O}
-            cellView.setText(userChar);
-
-            // Get cell information
-            int[] cellPlayed = (int[]) cellView.getTag();
-
-            // First update game board
-            gameBoard[cellPlayed[0]][cellPlayed[1]] = userChar;
-
-            // Analyse the board: checking for win, end of game, etc
-            analyseBoard(cellPlayed);
-        }
-    };
-
-    /**
-     * onclickListener for Buttons
-     */
-    // Sets the board size to three square. This is only active initially
-    View.OnClickListener threeSquareOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            setBoardSize(THREE_SQUARE_BOARD);
-
-            // Enable the other button and disable this one
-            fiveSquareButton.setClickable(true);
-            v.setClickable(false);
-
-            // Re-initialize the game board
-            initializeGameBoard();
-
-        }
-    };
-
-    // Sets the board size to five square. This is only active initially
-    View.OnClickListener fiveSquareOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            setBoardSize(FIVE_SQUARE_BOARD);
-
-            // Enable the other button and disable this one
-            threeSquareButton.setClickable(true);
-            v.setClickable(false);
-            // Re - initialize the game board
-            initializeGameBoard();
-
-        }
-    };
-
-    /**
-     * onClickListener for the reset button
-     */
-    View.OnClickListener resetButtonOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            resetGameBoard();
-        }
-    };
-
-    // OnClickListener for the game restart button
-    View.OnClickListener restartButtonOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            restartGame();
-        }
-    };
 
     /**
      * Analyses the game board checking for winning row, column or diagonal
@@ -234,13 +221,15 @@ public class MainActivity extends AppCompatActivity {
      * @param cellPlayed: specifies the cell played in form of {rowId, colId}
      */
     private void analyseBoard(int[] cellPlayed) {
-        if (isRowWin(cellPlayed)) {
+        // Checks for a win
+        if (isRowWin(cellPlayed) || isColumnWin(cellPlayed) || isDiagonalWin(cellPlayed)) {
             updateScoreBoard();
 
             // TODO: display winner message here
 
             restartGame();  // For testing only
         }
+
 
         // TODO: check for column win, diagonal win, end of game, draw
     }
@@ -254,8 +243,7 @@ public class MainActivity extends AppCompatActivity {
         if (currentPlayer.equals(X_PLAYER)) {
             xScore++;
             xPlayerButton.setText(getScoreAsString(xScore));
-        }
-        else if (currentPlayer.equals(O_PLAYER)){
+        } else if (currentPlayer.equals(O_PLAYER)) {
             oScore++;
             oPlayerButton.setText(getScoreAsString(oScore));
         }
@@ -263,10 +251,11 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Utility function that converts the score to String so that it can be displayed on textView
+     *
      * @param score is an integer value
      * @return A String
      */
-    private String getScoreAsString(int score){
+    private String getScoreAsString(int score) {
         return "" + score;
     }
 
@@ -421,7 +410,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Resets the game including the scoreboard and every other thing
      */
-    private void resetGameBoard(){
+    private void resetGameBoard() {
         // TODO: should reset the game whenever the button is pressed
         // Rest scoreboard
         xScore = 0;
@@ -435,9 +424,8 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Restarts the current game, only resetting the board and other variables and not the score board
-     *
      */
-    private void restartGame(){
+    private void restartGame() {
         // TODO: Should restart the current game
         initializeGameBoard();
         enableGameButtons();
@@ -446,7 +434,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Enable buttons. This is called when restarting or resetting a game
      */
-    private void enableGameButtons(){
+    private void enableGameButtons() {
         xPlayerButton.setClickable(true);
         oPlayerButton.setClickable(true);
 //        threeSquareButton.setClickable(true);
@@ -456,7 +444,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Disable all game buttons once game play's started
      */
-    private void disableGameButtons(){
+    private void disableGameButtons() {
         xPlayerButton.setClickable(false);
         oPlayerButton.setClickable(false);
 //        threeSquareButton.setClickable(false);
