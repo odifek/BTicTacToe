@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="330dp"
+    android:background="@color/primary_light"
+    android:padding="16dp"
+    android:id="@+id/result_layout">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:id="@+id/winner_char_text_view"
+        android:textSize="80sp"
+        android:textAlignment="center"
+        tools:text="X" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:id="@+id/winner_msg_text_view"
+        android:textSize="@dimen/text_big"
+        android:textAlignment="center"
+        tools:text="WINNER!" />
+</LinearLayout>

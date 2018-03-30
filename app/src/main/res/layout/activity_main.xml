@@ -54,6 +54,8 @@
 
         <include layout="@layout/five_square_layout" />
 
+        <include layout="@layout/result_layout" />
+
     </ViewFlipper>
 
     <LinearLayout

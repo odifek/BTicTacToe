@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     // Constants
@@ -21,8 +23,9 @@ public class MainActivity extends AppCompatActivity {
     private static final String O_PLAYER = "O";
     private static final String INITIAL_GAME_STATUS = "Start game or select player";
     private static final String DEFAULT_USER_CHAR = X_CHAR;
-    private static final String USER_PLAYER = "user";
-    private static final String MACHINE_PLAYER = "machine";
+
+    private static final String WINNER_MSG = "WINNER!";
+    private static final String DRAW_MSG = "DRAW!";
     // Define variables and constants
     private int oScore = 0;
     private int xScore = 0;
@@ -124,7 +127,9 @@ public class MainActivity extends AppCompatActivity {
             setBoardSize(FIVE_SQUARE_BOARD);
 
             // Change the view
-            layoutFlipper.showNext();
+//            layoutFlipper.showNext();
+            layoutFlipper.setDisplayedChild(layoutFlipper
+                    .indexOfChild(findViewById(R.id.five_square_layout)));
 
             // Enable the other button and disable this one
             threeSquareButton.setClickable(true);
@@ -142,7 +147,8 @@ public class MainActivity extends AppCompatActivity {
             setBoardSize(THREE_SQUARE_BOARD);
 
             // Change the view
-            layoutFlipper.showPrevious();
+            layoutFlipper.setDisplayedChild(layoutFlipper
+                    .indexOfChild(findViewById(R.id.three_square_layout)));
 
             // Enable the other button and disable this one
             fiveSquareButton.setClickable(true);
@@ -207,6 +213,17 @@ public class MainActivity extends AppCompatActivity {
                 gameCell.setOnClickListener(cellOnClickListener);
             }
         }
+
+        // Use the layout flipper to set the correct layout
+        // This is useful when coming out from end of game. That is starting a new game by
+        // clicking on the result display text view
+        if (boardSize == 3)
+            layoutFlipper.setDisplayedChild(layoutFlipper
+                    .indexOfChild(findViewById(R.id.three_square_layout)));
+        else
+            layoutFlipper.setDisplayedChild(layoutFlipper
+                    .indexOfChild(findViewById(R.id.five_square_layout)));
+
     }
 
     /**
@@ -255,12 +272,56 @@ public class MainActivity extends AppCompatActivity {
             updateScoreBoard();
 
             // TODO: display winner message here
+            displayResult(WINNER_MSG, currentPlayer);
 
-            restartGame();  // For testing only
+        } else if (boardIsFilled()) {
+            displayResult(DRAW_MSG, X_PLAYER + O_PLAYER);
         }
 
 
         // TODO: check for column win, diagonal win, end of game, draw
+    }
+
+    /**
+     * Checks whether all cell has been played
+     *
+     * @return true if all cell is played or false otherwise
+     */
+    private boolean boardIsFilled() {
+        for (int i = 0; i < boardSize; i++) {
+            for (int j = 0; i < boardSize; j++) {
+                if (gameBoard[i][j] == null)
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    private void displayResult(String status, String player) {
+        // Get the textviews for the congratulatory winner message
+        TextView winnerCharTextView = findViewById(R.id.winner_char_text_view);
+        TextView winnerMsgTextView = findViewById(R.id.winner_msg_text_view);
+
+        winnerCharTextView.setText(currentPlayer);
+        winnerMsgTextView.setText(R.string.winner_msg);
+
+        // set up click listeners
+        winnerCharTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                restartGame();
+            }
+        });
+        winnerMsgTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                restartGame();
+            }
+        });
+
+        // Display the result layout
+        layoutFlipper.setDisplayedChild(layoutFlipper
+                .indexOfChild(findViewById(R.id.result_layout)));
     }
 
 
@@ -483,7 +544,23 @@ public class MainActivity extends AppCompatActivity {
         threeSquareButton.setClickable(false);
         fiveSquareButton.setClickable(false);
     }
+
+    // TODO: Implement a machine play algorithm
+    private ArrayList<Integer[]> getEmptyCells() {
+        ArrayList<Integer[]> emptyCells = new ArrayList<>();
+        Integer[] emptyCell = new Integer[2];
+        for (int i = 0; i < boardSize; i++) {
+            for (int j = 0; j < boardSize; j++) {
+                if (gameBoard[i][j] == null) {
+                    emptyCell[0] = i;
+                    emptyCell[1] = j;
+                    emptyCells.add(emptyCell);
+                }
+            }
+        }
+        return emptyCells;
+    }
 }
 
-// TODO: Implement a machine play algorithm
+
 

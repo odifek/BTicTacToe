@@ -5,4 +5,5 @@
     <string name="restart_game">restart game</string>
     <string name="times">×</string>
     <string name="circle">\u25CB</string>
+    <string name="winner_msg">WINNER!</string>
 </resources>
