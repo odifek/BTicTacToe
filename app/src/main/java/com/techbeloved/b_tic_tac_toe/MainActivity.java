@@ -11,7 +11,7 @@ import android.widget.ViewFlipper;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,88 +20,95 @@ public class MainActivity extends AppCompatActivity {
     private static final int FIVE_SQUARE_BOARD = 5;
     private static final int DEFAULT_BOARD_SIZE = THREE_SQUARE_BOARD;
 
-    private static final String O_CHAR = "O";
-    private static final String X_CHAR = "X";
-    private static final String X_PLAYER = "X";
-    private static final String O_PLAYER = "O";
+    private static final String X_PLAYER = "×";
+    private static final String O_PLAYER = "○";
     private static final String INITIAL_GAME_STATUS = "Start game or select player. You can also " +
             "select board size";
-    private static final String DEFAULT_USER_CHAR = X_CHAR;
 
     private static final String WINNER_MSG = "WINNER!";
     private static final String DRAW_MSG = "DRAW!";
     private static final String GAME_OVER = "Game Over!";
 
-    private String userPlayer, machinePlayer;
-    // Define variables and constants
-    private int oScore = 0;
-    private int xScore = 0;
-    private String[][] gameBoard;
-    private int boardSize;
-    private boolean userPlaysFirst = true;
-    private String userChar, machineChar;
-    private String currentPlayer;
-
+    // Declare the rand generator only once
+    // SecureRandom ensures unpredictability
+    private final SecureRandom random = new SecureRandom();
+    // Define variables
+    private String mUserPlayer, mMachinePlayer;
+    private int mOScore = 0;
+    private int mXScore = 0;
+    private String[][] mGameBoard;
+    private int mBoardSize;
+    private String mCurrentPlayer;
     // Contains prefix of the cells either five_cell_ or three_cell_ depending on size of board
-    private String cellPrefix;
-
+    private String mCellPrefix;
     // View flipper
-    private ViewFlipper layoutFlipper;
+    private ViewFlipper mLayoutFlipper;
     // Views
-    private TextView gameStatusTextView;
+    private TextView mGameStatusTextView;
+    // Sets the board size to three square. This is only active initially
+    private final View.OnClickListener mThreeSquareOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            setBoardSize(THREE_SQUARE_BOARD);
+
+            // Change the view
+            mLayoutFlipper.setDisplayedChild(mLayoutFlipper
+                    .indexOfChild(findViewById(R.id.three_square_layout)));
+
+            // Enable the other button and disable this one
+            mFiveSquareButton.setClickable(true);
+            v.setClickable(false);
+            // Re - initialize the game board
+            initializeGameBoard();
+
+        }
+    };
+    private Button mOPlayerButton, mXPlayerButton;
+    private Button mThreeSquareButton, mFiveSquareButton;
     // Set user player as O when clicked
-    View.OnClickListener oPlayerOnClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOPlayerOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             v.setClickable(false);
             disableGameButtons();
-            userPlaysFirst = false;
 
             // Set user player to O_PLAYER
-            userPlayer = O_PLAYER;
+            mUserPlayer = O_PLAYER;
 
-            // Set machinePlayer to X_PLAYER
+            // Set mMachinePlayer to X_PLAYER
             // and call on machine to play immediately
-            machinePlayer = X_PLAYER;
-
-
-            // Change user play character to "O"
-            userChar = O_CHAR;
-
-            setGameStatus("'x' turn");
+            mMachinePlayer = X_PLAYER;
+            setGameStatus("X - turn");
+            machinePlay();
         }
     };
     // Set user player as X when clicked
-    View.OnClickListener xPlayerOnClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mXPlayerOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             v.setClickable(false);
             disableGameButtons();
-            userPlaysFirst = true;
 
             // Set appropriate values for machine player and user player
-            userPlayer = X_PLAYER;
-            machinePlayer = O_PLAYER;
+            mUserPlayer = X_PLAYER;
+            mMachinePlayer = O_PLAYER;
 
-            // Change user play character to "O"
-            userChar = X_CHAR;
-
-            setGameStatus("'x' turn");
+            // X always plays first
+            setGameStatus("X - turn");
         }
     };
-    private Button oPlayerButton, xPlayerButton;
     /**
      * Whenever a cell is clicked, record the cell and do other things like update the cell
      * Check for win or game over
      */
-    View.OnClickListener cellOnClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mCellOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             // Do not accept anymore clicks
             v.setClickable(false);
 
             // Disable ability to select player once game's started
-            if (oPlayerButton.isClickable() || xPlayerButton.isClickable()) {
+            if (mOPlayerButton.isClickable() || mXPlayerButton.isClickable()) {
                 disableGameButtons();
             }
 
@@ -109,13 +116,13 @@ public class MainActivity extends AppCompatActivity {
             TextView cellView = (TextView) v;
 
             // Update the cell to show the user character {either X or O}
-            cellView.setText(userChar);
+            cellView.setText(mUserPlayer);
 
             // Get cell information
             final int[] cellPlayed = (int[]) cellView.getTag();
 
             // First update game board
-            gameBoard[cellPlayed[0]][cellPlayed[1]] = userChar;
+            mGameBoard[cellPlayed[0]][cellPlayed[1]] = mUserPlayer;
 
             // Analyse the board: checking for win, end of game, etc
             final Handler handler = new Handler();
@@ -128,57 +135,35 @@ public class MainActivity extends AppCompatActivity {
             }, 100);
         }
     };
-
     /**
      * onClickListener for the reset button
      */
-    View.OnClickListener resetButtonOnClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mResetButtonOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             resetGameBoard();
         }
     };
     // OnClickListener for the game restart button
-    View.OnClickListener restartButtonOnClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mRestartButtonOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             restartGame();
         }
     };
-
-    private Button threeSquareButton, fiveSquareButton;
     // Sets the board size to five square. This is only active initially
-    View.OnClickListener fiveSquareOnClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mFiveSquareOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             setBoardSize(FIVE_SQUARE_BOARD);
 
             // Change the view
-//            layoutFlipper.showNext();
-            layoutFlipper.setDisplayedChild(layoutFlipper
+//            mLayoutFlipper.showNext();
+            mLayoutFlipper.setDisplayedChild(mLayoutFlipper
                     .indexOfChild(findViewById(R.id.five_square_layout)));
 
             // Enable the other button and disable this one
-            threeSquareButton.setClickable(true);
-            v.setClickable(false);
-            // Re - initialize the game board
-            initializeGameBoard();
-
-        }
-    };
-
-    // Sets the board size to three square. This is only active initially
-    View.OnClickListener threeSquareOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            setBoardSize(THREE_SQUARE_BOARD);
-
-            // Change the view
-            layoutFlipper.setDisplayedChild(layoutFlipper
-                    .indexOfChild(findViewById(R.id.three_square_layout)));
-
-            // Enable the other button and disable this one
-            fiveSquareButton.setClickable(true);
+            mThreeSquareButton.setClickable(true);
             v.setClickable(false);
             // Re - initialize the game board
             initializeGameBoard();
@@ -200,38 +185,35 @@ public class MainActivity extends AppCompatActivity {
      * Loops through all the cells of the board, setting click listeners to all of them
      */
     private void initializeGameBoard() {
-        // Initialize the gameBoard with the boardSize
-        gameBoard = new String[boardSize][boardSize];
+        // Initialize the mGameBoard with the mBoardSize
+        mGameBoard = new String[mBoardSize][mBoardSize];
 
         // Set the game status
-        gameStatusTextView = findViewById(R.id.game_status_textview);
-        gameStatusTextView.setText(INITIAL_GAME_STATUS);
+        mGameStatusTextView = findViewById(R.id.game_status_textview);
+        mGameStatusTextView.setText(INITIAL_GAME_STATUS);
 
         // Set the default user player to "X" and default machine player to "O"
-        userChar = DEFAULT_USER_CHAR;
-        userPlayer = X_PLAYER;
-        currentPlayer = userPlayer;
-        machinePlayer = O_PLAYER;
+        mUserPlayer = X_PLAYER;
+        mCurrentPlayer = mUserPlayer;
+        mMachinePlayer = O_PLAYER;
 
         // Get layout resources
         Resources resources = getResources();
         String packageName = getPackageName();
 
         //Prefix for cell IDs. Default is three square
-        if (boardSize == 5)
-            cellPrefix = "five_cell_";
-        else
-            cellPrefix = "three_cell_";
+        if (mBoardSize == 5) mCellPrefix = "five_cell_";
+        else mCellPrefix = "three_cell_";
 
-        for (int i = 0; i < boardSize; i++) {
-            for (int j = 0; j < boardSize; j++) {
+        for (int i = 0; i < mBoardSize; i++) {
+            for (int j = 0; j < mBoardSize; j++) {
 
                 // Retrieve the TextView ID using the name. Cells have ids cell_00, cell_01, and so on
-                int resId = resources.getIdentifier(cellPrefix + i + j, "id", packageName);
+                int resId = resources.getIdentifier(mCellPrefix + i + j, "id", packageName);
                 TextView gameCell = findViewById(resId);
 
                 // Set all cells to blank
-                gameBoard[i][j] = null;
+                mGameBoard[i][j] = null;
                 gameCell.setText(null);
 
                 // Store the cell location in the view's tag for easy retrieval of the
@@ -240,19 +222,20 @@ public class MainActivity extends AppCompatActivity {
                 gameCell.setTag(cell);
 
                 // Set the click listener
-                gameCell.setOnClickListener(cellOnClickListener);
+                gameCell.setOnClickListener(mCellOnClickListener);
             }
         }
 
         // Use the layout flipper to set the correct layout
         // This is useful when coming out from end of game. That is starting a new game by
         // clicking on the result display text view
-        if (boardSize == 3)
-            layoutFlipper.setDisplayedChild(layoutFlipper
+        if (mBoardSize == 3) {
+            mLayoutFlipper.setDisplayedChild(mLayoutFlipper
                     .indexOfChild(findViewById(R.id.three_square_layout)));
-        else
-            layoutFlipper.setDisplayedChild(layoutFlipper
+        } else {
+            mLayoutFlipper.setDisplayedChild(mLayoutFlipper
                     .indexOfChild(findViewById(R.id.five_square_layout)));
+        }
 
     }
 
@@ -265,30 +248,30 @@ public class MainActivity extends AppCompatActivity {
         // Set the board size to default size
         setBoardSize(DEFAULT_BOARD_SIZE);
 
-        xPlayerButton = findViewById(R.id.xPlayerBtn);
-        xPlayerButton.setOnClickListener(xPlayerOnClickListener);
+        mXPlayerButton = findViewById(R.id.xPlayerBtn);
+        mXPlayerButton.setOnClickListener(mXPlayerOnClickListener);
 
-        oPlayerButton = findViewById(R.id.oPlayerBtn);
-        oPlayerButton.setOnClickListener(oPlayerOnClickListener);
+        mOPlayerButton = findViewById(R.id.oPlayerBtn);
+        mOPlayerButton.setOnClickListener(mOPlayerOnClickListener);
 
         Button resetGameButton = findViewById(R.id.resetBtn);
-        resetGameButton.setOnClickListener(resetButtonOnClickListener);
+        resetGameButton.setOnClickListener(mResetButtonOnClickListener);
 
         Button restartGameButton = findViewById(R.id.restartBtn);
-        restartGameButton.setOnClickListener(restartButtonOnClickListener);
+        restartGameButton.setOnClickListener(mRestartButtonOnClickListener);
 
         // Configure buttons to change layout from 3 square to 5 square and vice versa
         // By default board is 3 x 3 so disable the button
-        threeSquareButton = findViewById(R.id.threeSquareBtn);
-        threeSquareButton.setOnClickListener(threeSquareOnClickListener);
-        threeSquareButton.setClickable(false);
+        mThreeSquareButton = findViewById(R.id.threeSquareBtn);
+        mThreeSquareButton.setOnClickListener(mThreeSquareOnClickListener);
+        mThreeSquareButton.setClickable(false);
 
-        fiveSquareButton = findViewById(R.id.fiveSquareBtn);
-        fiveSquareButton.setOnClickListener(fiveSquareOnClickListener);
+        mFiveSquareButton = findViewById(R.id.fiveSquareBtn);
+        mFiveSquareButton.setOnClickListener(mFiveSquareOnClickListener);
 
         // Configure layout flipper
-        layoutFlipper = findViewById(R.id.layout_flipper);
-//        layoutFlipper.showNext();
+        mLayoutFlipper = findViewById(R.id.layout_flipper);
+//        mLayoutFlipper.showNext();
     }
 
     /**
@@ -300,21 +283,28 @@ public class MainActivity extends AppCompatActivity {
         // Checks for a win
         if (isRowWin(cellPlayed) || isColumnWin(cellPlayed) || isDiagonalWin(cellPlayed)) {
             updateScoreBoard();
-            displayResult(WINNER_MSG, currentPlayer);
+            displayResult(WINNER_MSG, mCurrentPlayer);
 
         } else if (boardIsFilled()) {
             displayResult(DRAW_MSG, X_PLAYER + O_PLAYER);
-        } else
-            nextTurn();
+        } else {
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    nextTurn();
+                }
+            }, 200);
+        }
 
     }
 
     private void nextTurn() {
-        if (currentPlayer == userPlayer) {
+        if (Objects.equals(mCurrentPlayer, mUserPlayer)) {
             machinePlay();
         } else {
-            currentPlayer = userPlayer;  // Then wait for user click
-            setGameStatus(currentPlayer + " - turn");
+            mCurrentPlayer = mUserPlayer;  // Then wait for user click
+            setGameStatus(mCurrentPlayer + " - turn");
         }
     }
 
@@ -324,9 +314,9 @@ public class MainActivity extends AppCompatActivity {
      * @return true if all cell is played or false otherwise
      */
     private boolean boardIsFilled() {
-        for (int i = 0; i < boardSize; i++) {
-            for (int j = 0; j < boardSize; j++) {
-                if (gameBoard[i][j] == null)
+        for (int i = 0; i < mBoardSize; i++) {
+            for (int j = 0; j < mBoardSize; j++) {
+                if (mGameBoard[i][j] == null)
                     return false;
             }
         }
@@ -358,22 +348,21 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Display the result layout
-        layoutFlipper.setDisplayedChild(layoutFlipper
+        mLayoutFlipper.setDisplayedChild(mLayoutFlipper
                 .indexOfChild(findViewById(R.id.result_layout)));
     }
 
-
     /**
-     * Used to update the scoreBoard
+     * Updates the scoreBoard for the current player. This is called when the current player wins the game
+     * The scores are displayed on the respective player buttons - to the right
      */
     private void updateScoreBoard() {
-        // TODO: need to fix this to update score according to the current player
-        if (currentPlayer.equals(X_PLAYER)) {
-            xScore++;
-            xPlayerButton.setText(getScoreAsString(xScore));
-        } else if (currentPlayer.equals(O_PLAYER)) {
-            oScore++;
-            oPlayerButton.setText(getScoreAsString(oScore));
+        if (mCurrentPlayer.equals(X_PLAYER)) {
+            mXScore++;
+            mXPlayerButton.setText(getScoreAsString(mXScore));
+        } else if (mCurrentPlayer.equals(O_PLAYER)) {
+            mOScore++;
+            mOPlayerButton.setText(getScoreAsString(mOScore));
         }
     }
 
@@ -395,21 +384,27 @@ public class MainActivity extends AppCompatActivity {
      */
     private boolean isRowWin(int[] cellPlayed) {
         // Get the entire row specified by the cell
-        // Example, if the cell played is {1, 1}, the entire row is the second array in the gameBoard
-        String[] row = gameBoard[cellPlayed[0]];
+        // Example, if the cell played is {1, 1}, the entire row is the second array in the mGameBoard
+        String[] row = mGameBoard[cellPlayed[0]];
         return itemsAreIdentical(row);
     }
 
+    /**
+     * Checks whether the column specified by the cell is a win
+     *
+     * @param cellPlayed: specifies the cell played as an array of two digits representing the row and column
+     * @return true or false, win or not
+     */
     private boolean isColumnWin(int[] cellPlayed) {
         // Get the entire column specified by the cell
         int colId = cellPlayed[1];
 
-        // Initialize the column according to boardSize
-        String[] column = new String[boardSize];
+        // Initialize the column according to mBoardSize
+        String[] column = new String[mBoardSize];
 
         // Get all the items in the specified column
-        for (int i = 0; i < boardSize; i++) {
-            column[i] = gameBoard[i][colId];
+        for (int i = 0; i < mBoardSize; i++) {
+            column[i] = mGameBoard[i][colId];
         }
 
         return itemsAreIdentical(column);
@@ -457,12 +452,12 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param cellPlayed represents the cell played in the form of {rowID, colID}
      * @return 0 if cell is the middle cell, 1 if cell is in the first diagonal or 2 if cell is in
-     * the second diagonal
+     * the second diagonal or 3 if not on a diagonal
      */
     private int whichDiagonal(int[] cellPlayed) {
         int rowId = cellPlayed[0], colId = cellPlayed[1];
         // Check for middle cell
-        if (rowId == colId && rowId + colId == boardSize - 1) {
+        if (rowId == colId && rowId + colId == mBoardSize - 1) {
             return 0;
         }
         // First diagonal
@@ -470,11 +465,10 @@ public class MainActivity extends AppCompatActivity {
             return 1;
         }
         // Second diagonal
-        else if (rowId + colId == boardSize - 1) {
+        else if (rowId + colId == mBoardSize - 1) {
             return 2;
         } else return 3;
     }
-
 
     /**
      * Retrieves the first diagonal and
@@ -482,9 +476,9 @@ public class MainActivity extends AppCompatActivity {
      * @return an array of all the cells in the diagonal
      */
     private String[] getFirstDiagonal() {
-        String[] diagonal = new String[boardSize];
-        for (int i = 0; i < boardSize; i++) {
-            diagonal[i] = gameBoard[i][i];
+        String[] diagonal = new String[mBoardSize];
+        for (int i = 0; i < mBoardSize; i++) {
+            diagonal[i] = mGameBoard[i][i];
         }
         return diagonal;
     }
@@ -495,16 +489,15 @@ public class MainActivity extends AppCompatActivity {
      * @return an array of all the cells in the diagonal
      */
     private String[] getSecondDiagonal() {
-        String[] diagonal = new String[boardSize];
-        for (int j = 0, k = boardSize - 1; j < boardSize; j++, k--) {
-            diagonal[j] = gameBoard[j][k];
+        String[] diagonal = new String[mBoardSize];
+        for (int j = 0, k = mBoardSize - 1; j < mBoardSize; j++, k--) {
+            diagonal[j] = mGameBoard[j][k];
         }
         return diagonal;
     }
 
-
     /**
-     * Utility function to check that all items in an array are equal or identical
+     * Checks that all items in an array are equal or identical
      *
      * @param items: the array of strings to be checked
      * @return true or false, items are identical or they are not
@@ -520,31 +513,28 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-
     // Setting of the game status, such who's turn to play and other information
     private void setGameStatus(String msg) {
-        gameStatusTextView.setText(msg);
+        mGameStatusTextView.setText(msg);
     }
 
     /**
-     * Setting of the board size is handled publicly here
+     * Setting of the board size is handled  here
      *
      * @param boardSize: either THREE_SQUARE_BOARD (3) or FIVE_SQUARE_BOARD (5)
      */
-    public void setBoardSize(int boardSize) {
-        this.boardSize = boardSize;
+    private void setBoardSize(int boardSize) {
+        this.mBoardSize = boardSize;
     }
 
     /**
      * Resets the game including the scoreboard and every other thing
      */
     private void resetGameBoard() {
-        // TODO: should reset the game whenever the button is pressed
-        // Rest scoreboard
-        xScore = 0;
-        oScore = 0;
-        xPlayerButton.setText(R.string.score_placeholder);
-        oPlayerButton.setText(R.string.score_placeholder);
+        mXScore = 0;
+        mOScore = 0;
+        mXPlayerButton.setText(R.string.score_placeholder);
+        mOPlayerButton.setText(R.string.score_placeholder);
         initializeGameBoard();
         enableGameButtons();
 
@@ -554,7 +544,6 @@ public class MainActivity extends AppCompatActivity {
      * Restarts the current game, only resetting the board and other variables and not the score board
      */
     private void restartGame() {
-        // TODO: Should restart the current game
         initializeGameBoard();
         enableGameButtons();
     }
@@ -563,24 +552,24 @@ public class MainActivity extends AppCompatActivity {
      * Enable buttons. This is called when restarting or resetting a game
      */
     private void enableGameButtons() {
-        xPlayerButton.setClickable(true);
-        oPlayerButton.setClickable(true);
+        mXPlayerButton.setClickable(true);
+        mOPlayerButton.setClickable(true);
 
         // Enable the right button in case the player wants to change the layout
-        if (boardSize == THREE_SQUARE_BOARD)
-            fiveSquareButton.setClickable(true);
+        if (mBoardSize == THREE_SQUARE_BOARD)
+            mFiveSquareButton.setClickable(true);
         else
-            threeSquareButton.setClickable(true);
+            mThreeSquareButton.setClickable(true);
     }
 
     /**
      * Disable all game buttons once game play's started
      */
     private void disableGameButtons() {
-        xPlayerButton.setClickable(false);
-        oPlayerButton.setClickable(false);
-        threeSquareButton.setClickable(false);
-        fiveSquareButton.setClickable(false);
+        mXPlayerButton.setClickable(false);
+        mOPlayerButton.setClickable(false);
+        mThreeSquareButton.setClickable(false);
+        mFiveSquareButton.setClickable(false);
     }
 
     /**
@@ -590,9 +579,9 @@ public class MainActivity extends AppCompatActivity {
      */
     private ArrayList<Integer[]> getEmptyCells() {
         ArrayList<Integer[]> emptyCells = new ArrayList<>();
-        for (int i = 0; i < boardSize; i++) {
-            for (int j = 0; j < boardSize; j++) {
-                if (gameBoard[i][j] == null) {
+        for (int i = 0; i < mBoardSize; i++) {
+            for (int j = 0; j < mBoardSize; j++) {
+                if (mGameBoard[i][j] == null) {
                     Integer[] emptyCell = new Integer[2];
                     emptyCell[0] = i;
                     emptyCell[1] = j;
@@ -603,15 +592,19 @@ public class MainActivity extends AppCompatActivity {
         return emptyCells;
     }
 
+    /**
+     * Disables clicks on all cells of the game board. This is called when it's machine's turn to play
+     * To avoid unnecessary trigger by human fingers
+     */
     private void disableClickOnCells() {
         // Get layout resources
         Resources resources = getResources();
         String packageName = getPackageName();
 
-        for (int i = 0; i < boardSize; i++) {
-            for (int j = 0; j < boardSize; j++) {
+        for (int i = 0; i < mBoardSize; i++) {
+            for (int j = 0; j < mBoardSize; j++) {
                 // Retrieve the TextView ID using the name. Cells have ids cell_00, cell_01, and so on
-                int resId = resources.getIdentifier(cellPrefix + i + j, "id", packageName);
+                int resId = resources.getIdentifier(mCellPrefix + i + j, "id", packageName);
                 TextView gameCell = findViewById(resId);
 
                 // Disable click
@@ -620,36 +613,34 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Enables clicks on empty cells. Called when it's is human turn to play
+     */
     private void enableClickOnEmptyCells() {
         // Get layout resources
         Resources resources = getResources();
         String packageName = getPackageName();
 
-        for (int i = 0; i < boardSize; i++) {
-            for (int j = 0; j < boardSize; j++) {
+        for (int i = 0; i < mBoardSize; i++) {
+            for (int j = 0; j < mBoardSize; j++) {
                 // Retrieve the TextView ID using the name. Cells have ids cell_00, cell_01, and so on
-                int resId = resources.getIdentifier(cellPrefix + i + j, "id", packageName);
+                int resId = resources.getIdentifier(mCellPrefix + i + j, "id", packageName);
                 TextView gameCell = findViewById(resId);
 
                 // Disable click
-                if (gameBoard[i][j] == null)
+                if (mGameBoard[i][j] == null)
                     gameCell.setClickable(true);
             }
         }
     }
-
-    // Declare the rand generator only once
-    // SecureRandom ensures unpredictability
-    // TODO: random generator not actually randomising things
-    private SecureRandom random = new SecureRandom();
 
     /**
      * Handles the machine play algorithm
      * Selects a random empty cell and plays
      */
     private void machinePlay() {
-        currentPlayer = machinePlayer;
-        setGameStatus(currentPlayer + " - turn");
+        mCurrentPlayer = mMachinePlayer;
+        setGameStatus(mCurrentPlayer + " - turn");
 
         // Get layout resources
         final Resources resources = getResources();
@@ -670,7 +661,7 @@ public class MainActivity extends AppCompatActivity {
         final int[] cellPlayed = {cellRowId, cellColId};
 
         // update the game board
-        gameBoard[cellRowId][cellColId] = currentPlayer;
+        mGameBoard[cellRowId][cellColId] = mCurrentPlayer;
 
         // Use handler to play
         final Handler handler = new Handler();
@@ -679,12 +670,12 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 //Display  after 100ms
                 // Retrieve the TextView ID using the name. Cells have ids cell_00, cell_01, and so on
-                int resId = resources.getIdentifier(cellPrefix + cellRowId + cellColId,
+                int resId = resources.getIdentifier(mCellPrefix + cellRowId + cellColId,
                         "id", packageName);
                 TextView gameCell = findViewById(resId);
 
                 // Update the game board text View
-                gameCell.setText(currentPlayer);
+                gameCell.setText(mCurrentPlayer);
                 // TODO: animate this display
 
                 enableClickOnEmptyCells();
