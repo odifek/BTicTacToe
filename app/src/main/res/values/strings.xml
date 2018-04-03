@@ -3,7 +3,7 @@
     <string name="score_placeholder">--</string>
     <string name="reset_game">reset game</string>
     <string name="restart_game">restart game</string>
-    <string name="times">×</string>
+    <string name="times">❌</string>
     <string name="circle">\u25CB</string>
     <string name="five_square">5 x 5</string>
     <string name="three_square">3 x 3</string>
