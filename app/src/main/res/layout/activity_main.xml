@@ -58,30 +58,66 @@
         <include layout="@layout/result_layout" />
 
     </ViewFlipper>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="8dp">
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/threeSquareBtn"
-            android:text="@string/three_square" />
+        android:orientation="horizontal">
 
-        <!--Space is for separation of the two buttons-->
-        <Space
+        <RadioGroup
+            android:id="@+id/game_mode_radio_group"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
-        <Button
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/fiveSquareBtn"
-            android:shadowDy="3"
-            android:text="@string/five_square" />
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:layout_weight="1">
+
+            <RadioButton
+                android:id="@+id/single_player_radio_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:layout_marginEnd="16dp"
+                android:drawableEnd="@drawable/ic_person_black_24dp"
+                android:checked="true" />
+
+            <RadioButton
+                android:id="@+id/play_friend_radio_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:drawableEnd="@drawable/ic_people_black_24dp" />
+        </RadioGroup>
+
+        <RadioGroup
+            android:id="@+id/grid_choice_radio_group"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:layout_weight="1"
+            android:gravity="end">
+
+            <RadioButton
+                android:id="@+id/three_square_radio_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="4dp"
+                android:paddingEnd="8dp"
+                android:text="@string/three_square"
+                android:checked="true" />
+
+            <RadioButton
+                android:id="@+id/five_square_radio_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="4dp"
+                android:paddingEnd="8dp"
+                android:text="@string/five_square" />
+        </RadioGroup>
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

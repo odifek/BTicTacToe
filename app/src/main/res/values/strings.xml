@@ -5,8 +5,8 @@
     <string name="restart_game">restart game</string>
     <string name="times">❌</string>
     <string name="circle">\u25CB</string>
-    <string name="five_square">5 x 5</string>
-    <string name="three_square">3 x 3</string>
+    <string name="five_square">5 \u00D7 5</string>
+    <string name="three_square">3 \u00D7 3</string>
     <string name="restart">restart</string>
     <string name="reset">reset</string>
 </resources>

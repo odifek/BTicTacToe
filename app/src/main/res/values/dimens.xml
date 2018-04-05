@@ -4,4 +4,7 @@
     <dimen name="divider_thickness">5dp</dimen>
     <dimen name="text_big">48sp</dimen>
     <dimen name="text_small">22sp</dimen>
+    <dimen name="three_square_row_height">84dp</dimen>
+    <dimen name="five_square_row_height">44dp</dimen>
+    <dimen name="five_square_row_width">300dp</dimen>
 </resources>

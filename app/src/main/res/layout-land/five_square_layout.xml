@@ -11,8 +11,8 @@
 
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_width="@dimen/five_square_row_width"
+        android:layout_height="@dimen/five_square_row_height"
         android:weightSum="1">
 
         <TextView
@@ -73,8 +73,8 @@
         android:background="@color/divider" />
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_width="@dimen/five_square_row_width"
+        android:layout_height="@dimen/five_square_row_height"
         android:weightSum="1">
 
         <TextView
@@ -135,8 +135,8 @@
         android:background="@color/divider" />
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_width="@dimen/five_square_row_width"
+        android:layout_height="@dimen/five_square_row_height"
         android:weightSum="1">
 
         <TextView
@@ -198,8 +198,8 @@
 
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_width="@dimen/five_square_row_width"
+        android:layout_height="@dimen/five_square_row_height"
         android:weightSum="1">
 
         <TextView
@@ -261,8 +261,8 @@
 
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_width="@dimen/five_square_row_width"
+        android:layout_height="@dimen/five_square_row_height"
         android:weightSum="1">
 
         <TextView

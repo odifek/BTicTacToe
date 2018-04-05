@@ -13,102 +13,136 @@
         android:layout_weight="1"
         android:padding="16dp">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <Button
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/xPlayerBtn"
+                android:drawableStart="@drawable/ic_clear"
+                android:text="@string/score_placeholder"
+                android:textSize="@dimen/text_small"
+                android:textAlignment="viewEnd"
+                android:layout_marginBottom="8dp" />
+
+            <Button
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/oPlayerBtn"
+                android:drawableStart="@drawable/ic_circle"
+                android:text="@string/score_placeholder"
+                android:textSize="@dimen/text_small"
+                android:textAlignment="viewEnd" />
+        </LinearLayout>
+
+        <Button
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/restartBtn"
+            android:text="@string/restart"
+            android:layout_marginBottom="8dp" />
+
+        <Button
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/resetBtn"
+            android:text="@string/reset" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:orientation="vertical">
+
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
             android:id="@+id/game_status_textview"
             android:textAlignment="center"
             android:padding="4dp"
             android:layout_gravity="center"
             tools:text="Select player or start game" />
+        <!--ViewFlipper holds the two layouts - threeSquare and fiveSquare layouts.-->
+        <ViewFlipper
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/layout_flipper"
+            android:inAnimation="@android:anim/slide_in_left"
+            android:outAnimation="@android:anim/slide_out_right">
 
-        <Button
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/xPlayerBtn"
-            android:drawableStart="@drawable/ic_clear"
-            android:text="@string/score_placeholder"
-            android:textSize="@dimen/text_small"
-            android:textAlignment="viewEnd"
-            android:layout_marginBottom="16dp" />
+            <include layout="@layout/three_square_layout" />
 
-        <!--Space is for separation of the two buttons-->
-        <!--<Space-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="0dp"-->
-        <!--android:layout_weight="1"/>-->
-        <Button
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/oPlayerBtn"
-            android:drawableStart="@drawable/ic_circle"
-            android:text="@string/score_placeholder"
-            android:textSize="@dimen/text_small"
-            android:textAlignment="viewEnd" />
+            <include layout="@layout/five_square_layout" />
+
+            <include layout="@layout/result_layout" />
+
+        </ViewFlipper>
+
     </LinearLayout>
 
-
-    <!--ViewFlipper holds the two layouts - threeSquare and fiveSquare layouts.-->
-    <ViewFlipper
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="2"
-        android:id="@+id/layout_flipper"
-        android:inAnimation="@android:anim/slide_in_left"
-        android:outAnimation="@android:anim/slide_out_right">
-
-        <include layout="@layout/three_square_layout" />
-
-        <include layout="@layout/five_square_layout" />
-
-        <include layout="@layout/result_layout" />
-
-    </ViewFlipper>
-
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_weight=".8"
-        android:padding="8dp">
+        android:padding="16dp">
 
-        <Button
+        <RadioGroup
+            android:id="@+id/game_mode_radio_group"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/threeSquareBtn"
-            android:text="@string/three_square"
-            tools:text="3 x 3" />
-
-        <!--Space is for separation of the two buttons-->
-        <!--<Space-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="0dp"-->
-        <!--android:layout_weight="1"/>-->
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/fiveSquareBtn"
-            android:shadowDy="3"
-            android:text="@string/five_square"
-            tools:text="5 x 5" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/restartBtn"
-            android:text="@string/restart" />
-
-        <!--Space is for separation of the two buttons-->
-        <Space
-            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:orientation="vertical"
+            android:layout_weight="1">
 
-        <Button
+            <RadioButton
+                android:id="@+id/single_player_radio_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableEnd="@drawable/ic_person_black_24dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:checked="true"
+                android:layout_marginBottom="8dp" />
+
+            <RadioButton
+                android:id="@+id/play_friend_radio_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:drawableEnd="@drawable/ic_people_black_24dp" />
+        </RadioGroup>
+
+        <RadioGroup
+            android:id="@+id/grid_choice_radio_group"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/resetBtn"
-            android:text="@string/reset" />
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:gravity="bottom">
+
+            <RadioButton
+                android:id="@+id/three_square_radio_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="@string/three_square"
+                android:checked="true"
+                android:layout_marginBottom="8dp" />
+
+            <RadioButton
+                android:id="@+id/five_square_radio_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="@string/five_square" />
+        </RadioGroup>
     </LinearLayout>
 
 </LinearLayout>

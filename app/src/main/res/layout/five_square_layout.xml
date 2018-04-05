@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/five_square_layout"
     android:layout_width="match_parent"
-    android:layout_height="330dp"
+    android:layout_height="wrap_content"
     android:background="@color/primary_light"
     android:orientation="vertical"
     android:padding="16dp"
@@ -12,7 +12,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/five_square_row_height"
         android:weightSum="1">
 
         <TextView
@@ -74,7 +74,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/five_square_row_height"
         android:weightSum="1">
 
         <TextView
@@ -136,7 +136,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/five_square_row_height"
         android:weightSum="1">
 
         <TextView
@@ -199,7 +199,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/five_square_row_height"
         android:weightSum="1">
 
         <TextView
@@ -262,7 +262,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/five_square_row_height"
         android:weightSum="1">
 
         <TextView
