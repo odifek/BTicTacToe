@@ -1,9 +1,9 @@
 package com.techbeloved.b_tic_tac_toe;
 
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioGroup;
@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int FIVE_SQUARE_BOARD = 5;
     private static final int DEFAULT_BOARD_SIZE = THREE_SQUARE_BOARD;
 
-    private static final String X_PLAYER = "❌";
+    private static final String X_PLAYER = "✖";
     private static final String O_PLAYER = "⭕";
     private static final String INITIAL_GAME_STATUS = "Start game or select player";
 
@@ -518,7 +518,10 @@ public class MainActivity extends AppCompatActivity {
      */
     private void nextTurn() {
         if (Objects.equals(mCurrentPlayer, mFirstPlayer)) {
-            // Friends turn to play
+            // TODO: set indicator on the next players button
+//            mXPlayerButton.setBackgroundResource(R.drawable.active_indicator_white);
+//            mXPlayerButton.setTextColor(Color.GRAY);
+//            mXPlayerButton.setShadowLayer(2, 1, 3, Color.BLACK);
             if (mPlayAFriend) {
                 mCurrentPlayer = mSecondPlayer;
                 setGameStatus(mCurrentPlayer + " - turn");
