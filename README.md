@@ -24,6 +24,7 @@ Single Player (playing with machine)
 
 </p>
 
-<p align
-
+<p align="center">
+<a href="" target="_blank"><img src="game_started_landscape-2018-04-05-124722.png" width="80%"/>Landscape. Game state is preserved</a>
+</p>
 Andela Learning Community (ALC) 2.0 powered by Google is a program that connects people who are interested in learning software development with beginner or intermediate courses in Android/web development or product design. Powered by Andela and Google, and featuring course curriculum from <a href="https://www.udacity.com" target="_blank">Udacity</a>
